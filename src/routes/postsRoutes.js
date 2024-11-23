@@ -1,11 +1,6 @@
-// Importa o framework Express para criar a aplicação web.
 import express from "express";
-
-// Importa o middleware multer para tratar uploads de arquivos.
 import multer from "multer";
-
-// Importa as funções controladoras do arquivo postsController.js
-import { IncluirPokemonEquipe, listarEquipePokemon, uploadImagem } from "../controllers/postsController.js";
+import { atualizarNovoPokemonEquipe, incluirPokemonEquipe, listarEquipePokemon, uploadImagem } from "../controllers/postsController.js";
 
 // Configura o armazenamento de arquivos para o multer.
 // - Define a pasta 'uploads/' como destino para os arquivos.
@@ -28,19 +23,11 @@ const routes = (app) => {
   // Habilita o middleware express.json() para interpretar requisições JSON.
   app.use(express.json());
 
-  // Rota GET para listar a equipe Pokemon.
-  // - Chama a função listarEquipePokemon do controlador.
+ 
   app.get("/equipePokemon", listarEquipePokemon);
-
-  // Rota POST para incluir um novo Pokémon na equipe.
-  // - Chama a função IncluirPokemonEquipe do controlador.
-  // - Recebe dados do novo Pokémon no corpo da requisição.
-  app.post("/equipePokemon", IncluirPokemonEquipe);
-
-  // Rota POST para fazer upload da imagem de um Pokémon.
-  // - Utiliza o middleware upload.single("imagem") para tratar o upload da imagem.
-  // - Chama a função uploadImagem do controlador após o upload da imagem.
+  app.post("/equipePokemon", incluirPokemonEquipe);
   app.post("/upload", upload.single("imagem"), uploadImagem)
+  app.put("/upload/:id",upload.single("imagem"), atualizarNovoPokemonEquipe)
 }
 
 // Exporta a função routes para uso em outros arquivos.
