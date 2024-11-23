@@ -1,5 +1,6 @@
 import { getEquipePokemon, incluirPokemonNovo, updatePokemon } from "../models/postsModel.js";
 import fs from "fs";
+import gerarDescricaoComGemini from "../Services/geminiService.js";
 
 // Função para listar toda a equipe de Pokémon armazenada no banco de dados.
 export async function listarEquipePokemon (req, res){
@@ -48,15 +49,17 @@ export async function uploadImagem(req,res) {
 export async function atualizarNovoPokemonEquipe(req,res) {
     const id = req.params.id;
     const urlImagem = `http://localhost:3000/${id}.png`
-    const pokemon = {
-        nome: req.body.nome,
-        tipo: req.body.tipo,
-        descricao: req.body.descricao,
-        urlImagem: urlImagem,
-        alt: req.body.alt,
-        pokedexId: req.body.pokedexId
-    }
     try {
+        const imageBuffer = fs.readFileSync(`uploads/${id}.png`);
+        const descricaoComGemini = await gerarDescricaoComGemini(imageBuffer);
+        const pokemon = {
+            nome: req.body.nome,
+            tipo: req.body.tipo,
+            descricao: descricaoComGemini,
+            urlImagem: urlImagem,
+            alt: req.body.alt,
+            pokedexId: req.body.pokedexId
+        }
         const pokemonAtualizado = await updatePokemon(id,pokemon);
         res.status(200).json(pokemonAtualizado);
     } catch (erro) {
